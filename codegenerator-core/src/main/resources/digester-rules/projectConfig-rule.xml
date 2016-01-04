@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE digester-rules PUBLIC "-//Jakarta Apache //DTD digester-rules XML V1.0//EN" "digester-rules.dtd">
+<digester-rules>
+	<object-create-rule pattern="projects" classname="java.util.ArrayList" />
+	<pattern value="projects/project">
+		<object-create-rule
+			classname="org.anttribe.codegenerator.core.config.ProjectConfig" />
+		<set-properties-rule />
+		<pattern value="copyright">
+			<object-create-rule
+				classname="org.anttribe.codegenerator.core.config.Copyright" />
+			<set-properties-rule />
+			<call-method-rule pattern="author" methodname="setAuthor"
+				paramcount="0" />
+			<call-method-rule pattern="description" methodname="setDescription"
+				paramcount="0" />
+			<call-method-rule pattern="author-email" methodname="setAuthorEmail"
+				paramcount="0" />
+			<call-method-rule pattern="version" methodname="setVersion"
+				paramcount="0" />
+			<set-next-rule methodname="setCopyright" />
+		</pattern>
+		<pattern value="dbConfig">
+			<object-create-rule classname="org.anttribe.codegenerator.core.config.DbConfig" />
+			<call-method-rule pattern="dialect" methodname="setDialect"
+				paramcount="0" />
+			<call-method-rule pattern="driverClass" methodname="setDriverClass"
+				paramcount="0" />
+			<call-method-rule pattern="url" methodname="setUrl"
+				paramcount="0" />
+			<call-method-rule pattern="username" methodname="setUsername"
+				paramcount="0" />
+			<call-method-rule pattern="password" methodname="setPassword"
+				paramcount="0" />
+			<set-properties-rule />
+			<set-next-rule methodname="setDbConfig" />
+		</pattern>
+		<pattern value="template-mappings">
+			<object-create-rule classname="java.util.ArrayList" />
+			<pattern value="mapping">
+				<object-create-rule
+					classname="org.anttribe.codegenerator.core.config.TemplateMapping" />
+				<set-properties-rule>
+					<alias attr-name="package" prop-name="packageName" />
+				</set-properties-rule>
+				<set-next-rule methodname="add" />
+			</pattern>
+			<set-next-rule methodname="setTemplateMappings" />
+		</pattern>
+		<pattern value="table-mappings">
+			<object-create-rule classname="java.util.ArrayList" />
+			<pattern value="mapping">
+				<object-create-rule
+					classname="org.anttribe.codegenerator.core.config.TableMapping" />
+				<set-properties-rule />
+				<set-next-rule methodname="add" />
+			</pattern>
+			<set-next-rule methodname="setTableMappings" />
+		</pattern>
+		<set-next-rule methodname="add" />
+	</pattern>
+</digester-rules>

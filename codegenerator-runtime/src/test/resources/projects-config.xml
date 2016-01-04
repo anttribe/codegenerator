@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projects>
+	<project name="webim" description="蚂蚁群" basePackage="org.anttribe.webim"
+		encoding="UTF-8" templateDirectory="templates/webim" outputDirectory="D:\Downloads\codegenerator\output"
+		tablePrefix="t_webim_">
+
+		<!-- 版权信息 -->
+		<copyright>
+			<author>zhaoyong</author>
+			<author-email>anshenglimin@163.com</author-email>
+			<description>
+			    <![CDATA[Copyright (c) (Anttribe)opencourse v1.0. All rights reserved.]]>
+			</description>
+			<version>1.0</version>
+		</copyright>
+
+		<!-- 数据库配置 -->
+		<dbConfig>
+			<dialect>MYSQL</dialect>
+			<driverClass>com.mysql.jdbc.Driver</driverClass>
+			<url>jdbc:mysql://localhost:3306/webim?useUnicode=true&amp;characterEncoding=UTF-8
+			</url>
+			<username>root</username>
+			<password></password>
+		</dbConfig>
+
+		<!-- 模板映射 -->
+		<template-mappings>
+			<mapping template="Model.ftl" output="${MODELNAME}.java"
+				package="domain"></mapping>
+			<mapping template="Application.ftl" output="${MODELNAME}Application.java"
+				package="application"></mapping>
+		</template-mappings>
+
+		<!-- 表映射 -->
+		<table-mappings>
+			<mapping table="t_webim_message" module="core"></mapping>
+			<mapping table="t_webim_messagebody" module="core"></mapping>
+		</table-mappings>
+	</project>
+</projects>
