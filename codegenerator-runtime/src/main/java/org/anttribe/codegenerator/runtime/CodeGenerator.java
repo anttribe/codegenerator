@@ -169,27 +169,6 @@ public class CodeGenerator implements Generator
         }
         templateDatas.putAll(tableMapping.toTemplateDatas());
         
-        // 遍历模板，生成对应每一个模板的代码
-        for (TemplateMapping templateMapping : templateMappings)
-        {
-            try
-            {
-                this.generate(templateDatas, projectConfig, tableMapping, templateMapping);
-            }
-            catch (Exception e)
-            {
-                logger.error("Generating code get error, cause: {}", e);
-                throw new CodeGeneratorException("Generating code get error", e);
-            }
-        }
-    }
-    
-    private void generate(Map<String, Object> templateDatas, ProjectConfig projectConfig, TableMapping tableMapping,
-        TemplateMapping templateMapping)
-            throws IOException, TemplateException, CodeGeneratorException
-    {
-        templateDatas.putAll(templateMapping.toTemplateDatas());
-        
         // 根据TableMapping和DBConfig解析表结构数据
         DbConfig dbConfig = projectConfig.getDbConfig();
         if (null == dbConfig || StringUtils.isEmpty(dbConfig.getDialect()))
@@ -217,40 +196,59 @@ public class CodeGenerator implements Generator
             }
             templateDatas.put(Keys.DBTABLE, dbTable);
             
-            // 模板路径
-            File templateFile = new File(templateMapping.getTemplate());
-            // 设置模板参数
-            this.templateConfig.setEncoding(Locale.getDefault(), projectConfig.getEncoding());
-            this.templateConfig.setDirectoryForTemplateLoading(templateFile.getParentFile());
-            
-            // 获取模板
-            Template template = templateConfig.getTemplate(templateFile.getName());
-            // 获取输出
-            String outputFilename =
-                this.buildOutputFilename(templateDatas, projectConfig, tableMapping, templateMapping);
-            // 设置输出
-            if (!StringUtils.isEmpty(outputFilename))
+            // 遍历模板，生成对应每一个模板的代码
+            for (TemplateMapping templateMapping : templateMappings)
             {
-                File outputFile = new File(outputFilename);
-                if (null != outputFile.getParentFile() && !outputFile.getParentFile().exists())
+                try
                 {
-                    // 创建目录
-                    outputFile.getParentFile().mkdirs();
+                    this.generate(templateDatas, projectConfig, tableMapping, templateMapping);
                 }
-                
-                String fileName = outputFile.getName();
-                templateDatas.put(Keys.FILENAME, fileName);
-                templateDatas.put(Keys.CLASSNAME, fileName.substring(0, fileName.indexOf(".")));
-                
-                PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
-                template.process(templateDatas, writer);
-                writer.close();
-                logger.debug("Generating code successful, output file {}", outputFile.getPath());
+                catch (Exception e)
+                {
+                    logger.error("Generating code get error, cause: {}", e);
+                    throw new CodeGeneratorException("Generating code get error", e);
+                }
             }
         }
         catch (DbException e)
         {
             throw new CodeGeneratorException(e);
+        }
+    }
+    
+    private void generate(Map<String, Object> templateDatas, ProjectConfig projectConfig, TableMapping tableMapping,
+        TemplateMapping templateMapping)
+            throws IOException, TemplateException, CodeGeneratorException
+    {
+        templateDatas.putAll(templateMapping.toTemplateDatas());
+        // 模板路径
+        File templateFile = new File(templateMapping.getTemplate());
+        // 设置模板参数
+        this.templateConfig.setEncoding(Locale.getDefault(), projectConfig.getEncoding());
+        this.templateConfig.setDirectoryForTemplateLoading(templateFile.getParentFile());
+        
+        // 获取模板
+        Template template = templateConfig.getTemplate(templateFile.getName());
+        // 获取输出
+        String outputFilename = this.buildOutputFilename(templateDatas, projectConfig, tableMapping, templateMapping);
+        // 设置输出
+        if (!StringUtils.isEmpty(outputFilename))
+        {
+            File outputFile = new File(outputFilename);
+            if (null != outputFile.getParentFile() && !outputFile.getParentFile().exists())
+            {
+                // 创建目录
+                outputFile.getParentFile().mkdirs();
+            }
+            
+            String fileName = outputFile.getName();
+            templateDatas.put(Keys.FILENAME, fileName);
+            templateDatas.put(Keys.CLASSNAME, fileName.substring(0, fileName.indexOf(".")));
+            
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
+            template.process(templateDatas, writer);
+            writer.close();
+            logger.debug("Generating code successful, output file {}", outputFile.getPath());
         }
     }
     

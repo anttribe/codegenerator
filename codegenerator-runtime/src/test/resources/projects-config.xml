@@ -28,6 +28,8 @@
 		<template-mappings>
 			<mapping template="Model.ftl" output="${MODELNAME}.java"
 				package="domain"></mapping>
+			<mapping template="mapper.ftl" output="${MODELNAME}-mapper.xml"
+				package="domain"></mapping>
 			<mapping template="Application.ftl" output="${MODELNAME}Application.java"
 				package="application"></mapping>
 		</template-mappings>
