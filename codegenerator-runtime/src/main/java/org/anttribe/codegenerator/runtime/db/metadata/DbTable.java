@@ -40,12 +40,17 @@ public class DbTable
     /**
      * 类型, 默认是表
      */
-    private DbTableType type = DbTableType.TABLE;
+    DbTableType type = DbTableType.TABLE;
     
     /**
      * 数据库列集合
      */
     private List<DbColumn> columns;
+    
+    /**
+     * 主键列
+     */
+    private List<DbColumn> primaryKeys;
     
     public String getTableName()
     {
@@ -105,6 +110,16 @@ public class DbTable
     public void setColumns(List<DbColumn> columns)
     {
         this.columns = columns;
+    }
+    
+    public List<DbColumn> getPrimaryKeys()
+    {
+        return primaryKeys;
+    }
+    
+    public void setPrimaryKeys(List<DbColumn> primaryKeys)
+    {
+        this.primaryKeys = primaryKeys;
     }
     
 }

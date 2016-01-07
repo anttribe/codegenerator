@@ -72,6 +72,11 @@ public class ProjectConfig
     private String tablePrefix;
     
     /**
+     * 表后缀
+     */
+    private String tableSuffix;
+    
+    /**
      * 项目版权信息
      */
     private Copyright copyright;
@@ -252,6 +257,16 @@ public class ProjectConfig
         this.tablePrefix = tablePrefix;
     }
     
+    public String getTableSuffix()
+    {
+        return tableSuffix;
+    }
+    
+    public void setTableSuffix(String tableSuffix)
+    {
+        this.tableSuffix = tableSuffix;
+    }
+    
     public Copyright getCopyright()
     {
         return copyright;
@@ -351,6 +366,11 @@ public class ProjectConfig
                     if (!StringUtils.isEmpty(this.getTablePrefix()))
                     {
                         tableName = tableName.replaceFirst(this.getTablePrefix(), "");
+                    }
+                    // 去除表后缀
+                    if (!StringUtils.isEmpty(this.getTableSuffix()) && tableName.endsWith(this.getTableSuffix()))
+                    {
+                        tableName = tableName.substring(0, tableName.lastIndexOf(this.getTableSuffix()));
                     }
                     if (StringUtils.isEmpty(tableName))
                     {

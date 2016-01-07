@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projects>
-	<project name="webim" description="蚂蚁群" basePackage="org.anttribe.webim"
-		encoding="UTF-8" templateDirectory="templates/webim" outputDirectory="D:\Downloads\codegenerator\output"
-		tablePrefix="t_webim_">
+	<project name="openeshop" description="开放微电商" basePackage="org.anttribe.openeshop"
+		encoding="UTF-8" templateDirectory="templates/openeshop"
+		outputDirectory="D:\Downloads\codegenerator\output" tablePrefix="t_"
+		tableSuffix="">
 
 		<!-- 版权信息 -->
 		<copyright>
 			<author>zhaoyong</author>
 			<author-email>anshenglimin@163.com</author-email>
 			<description>
-			    <![CDATA[Copyright (c) (Anttribe)opencourse v1.0. All rights reserved.]]>
+			    <![CDATA[Copyright (c) (Anttribe)openeshop v1.0. All rights reserved.]]>
 			</description>
 			<version>1.0</version>
 		</copyright>
@@ -18,7 +19,7 @@
 		<dbConfig>
 			<dialect>MYSQL</dialect>
 			<driverClass>com.mysql.jdbc.Driver</driverClass>
-			<url>jdbc:mysql://localhost:3306/webim?useUnicode=true&amp;characterEncoding=UTF-8
+			<url>jdbc:mysql://localhost:3306/openeshop?useUnicode=true&amp;characterEncoding=UTF-8
 			</url>
 			<username>root</username>
 			<password></password>
@@ -36,8 +37,26 @@
 
 		<!-- 表映射 -->
 		<table-mappings>
-			<mapping table="t_webim_message" module="core"></mapping>
-			<mapping table="t_webim_messagebody" module="core"></mapping>
+			<mapping table="t_distribution_info" module="core"></mapping>
+			<mapping table="t_payment_info" module="core"></mapping>
+
+			<mapping table="t_shop_category_info" module="shop"></mapping>
+			<mapping table="t_shop_info" module="shop"></mapping>
+			<mapping table="t_shop_distribution_info" module="shop"></mapping>
+			<mapping table="t_shop_payment_info" module="shop"></mapping>
+
+			<mapping table="t_product_spu_info" module="product"></mapping>
+			<mapping table="t_product_sku_info" module="product"></mapping>
+			<mapping table="t_product_picture_info" module="product"></mapping>
+			<mapping table="t_shop_product_category_info" module="product"></mapping>
+			<mapping table="t_product_category_associ_rec" module="product"></mapping>
+			<mapping table="t_product_appraise_rec" module="product"></mapping>
+			<mapping table="t_product_appraise_file_rec" module="product"></mapping>
+
+			<mapping table="t_product_order_rec" module="order"></mapping>
+			<mapping table="t_product_order_operate_rec" module="order"></mapping>
+			<mapping table="t_product_order_product_rec" module="order"></mapping>
+
 		</table-mappings>
 	</project>
 </projects>

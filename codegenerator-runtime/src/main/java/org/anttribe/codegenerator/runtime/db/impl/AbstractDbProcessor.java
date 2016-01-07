@@ -82,6 +82,9 @@ public class AbstractDbProcessor implements DbProcessor
                     if (null != dbColumns)
                     {
                         dbTable.setColumns(dbColumns);
+                        
+                        // 获取表主键
+                        
                     }
                 }
             }
