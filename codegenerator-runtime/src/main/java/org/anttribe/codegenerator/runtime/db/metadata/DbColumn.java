@@ -1,6 +1,6 @@
 /*
  * 文  件   名: DbColumn.java
- * 版         本 : (Anttribe)codegenerator-core. All rights reserved.
+ * 版         本 : (Anttribe)codegenerator-runtime. All rights reserved.
  * 描         述 : <描述>
  * 修   改  人: zhaoyong
  * 修改时间: 2015年12月21日
@@ -29,6 +29,11 @@ public class DbColumn
      * 列注释
      */
     private String columnComment;
+    
+    /**
+     * 索引序号, 表中的列的索引（从 1 开始）
+     */
+    private int ordinal;
     
     /**
      * 对应jdbc类型
@@ -94,6 +99,16 @@ public class DbColumn
     public void setFieldName(String fieldName)
     {
         this.fieldName = fieldName;
+    }
+    
+    public int getOrdinal()
+    {
+        return ordinal;
+    }
+    
+    public void setOrdinal(int ordinal)
+    {
+        this.ordinal = ordinal;
     }
     
     public String getColumnComment()

@@ -11,7 +11,7 @@
 	<!-- select -->
 	<sql id="select">
         <![CDATA[
-            SELECT <#list DBTABLE.columns as column><#if column_index != 0>, </#if>t.${column.columnName}</#list>
+            SELECT <#list DBTABLE.columns as column>t.${column.columnName}<#if column_index != (DBTABLE.columns?size - 1)>, </#if></#list>
               FROM ${DBTABLE.tableName} t
         ]]>
 	</sql>
@@ -29,9 +29,16 @@
 	
 	<!-- insert: 插入单条数据 -->
 	<insert id="insert" parameterType="${PACKAGENAME}.${MODELNAME}">
+	    <#list DBTABLE.primaryKeys as primaryKey>
+		    <#if primaryKey.autoIncrement>
+			    <selectKey keyProperty="" resultType="" order="AFTER">
+				    <![CDATA[ SELECT LAST_INSERT_ID() ]]>
+				</selectKey>
+			</#if>
+		</#list>
 		<![CDATA[
-		    INSERT INTO ${DBTABLE.tableName}(<#list DBTABLE.columns as column><#if column_index != 0>, </#if>${column.columnName}</#list>)
-		        VALUES(<#list DBTABLE.columns as column><#if column_index != 0>, </#if>${"#{"?xml}${column.fieldName}${"}"?xml}</#list>)
+		    INSERT INTO ${DBTABLE.tableName}(<#list DBTABLE.columns as column><#if !column.primaryKey || (column.primaryKey && !column.autoIncrement)>${column.columnName}<#if column_index != (DBTABLE.columns?size - 1)>, </#if></#if></#list>)
+		        VALUES(<#list DBTABLE.columns as column><#if !column.primaryKey || (column.primaryKey && !column.autoIncrement)>${"#{"?xml}${column.fieldName}${"}"?xml}<#if  column_index != (DBTABLE.columns?size - 1)>, </#if></#if></#list>)
 		]]>
 	</insert>
 
@@ -42,14 +49,14 @@
         ]]>
 		<set>
 		    <#list DBTABLE.columns as column>
+			<#if !column.primaryKey || (column.primaryKey && !column.autoIncrement)>
 		    <if test="null != ${column.fieldName} and ${column.fieldName} != ''">
 				t.${column.columnName} = ${"#{"?xml}${column.fieldName}${"}"?xml}
 			</if>
+			</#if>
 		    </#list>
 		</set>
-		<![CDATA[
-            WHERE id = 
-        ]]>
+		<include refid="where"></include>
 	</update>
 
 	<!-- delete: 删除单条数据 -->

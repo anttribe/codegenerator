@@ -4,11 +4,12 @@ package ${PACKAGENAME};
 import org.anttribe.opengadget.core.domain.MybatisAbstractEntity;
 
 /**
- *
+ * ${DBTABLE.tableComment}
+ * 
  * @author ${COPYRIGHT.author}
  * @version ${COPYRIGHT.version}
  */
-public class ${CLASSNAME} extends MybatisAbstractEntity
+public class ${MODELNAME} extends MybatisAbstractEntity
 {
 
 	<#list DBTABLE.columns as column>
@@ -21,20 +22,32 @@ public class ${CLASSNAME} extends MybatisAbstractEntity
 	/**
 	 * <默认构造器>
 	 */
-	public ${CLASSNAME}() 
+	public ${MODELNAME}() 
 	{
+	}
+	
+	/**
+	 * 将当前对象转换为参数列表
+	 */
+	public Map<String, Object> toCriteria()
+	{
+	    Map<String, Object> criteria = new HashMap<String, Object>();
+		<#list DBTABLE.columns as column>
+		criteria.put("${column.fieldName?uncap_first}", this.get${column.fieldName?cap_first});
+		</#list>
+		return criteria;
 	}
 	
 	@Override
 	public String toString()
 	{
 		StringBuilder strB = new StringBuilder();
-		strB.append("${CLASSNAME}").append("{")
+		strB.append("${MODELNAME}").append("{")
 		<#list DBTABLE.columns as column>
-		<#if column_index != 0>
-		    .append(',')
-		</#if>
 		    .append("${column.fieldName?uncap_first}=").append(this.get${column.fieldName?cap_first}())
+		    <#if column_index != (DBTABLE.columns?size - 1)>
+		    .append(',')
+		    </#if>
 		</#list>
 		    .append("}");
 		return strB.toString();

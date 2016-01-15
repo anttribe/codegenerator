@@ -14,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.anttribe.codegenerator.core.config.DbConfig;
 import org.anttribe.codegenerator.core.exception.DbException;
@@ -24,6 +26,7 @@ import org.anttribe.codegenerator.runtime.db.metadata.DbTable;
 import org.anttribe.codegenerator.runtime.db.metadata.DbTableType;
 import org.anttribe.codegenerator.runtime.db.metadata.JavaType;
 import org.anttribe.codegenerator.runtime.db.metadata.JdbcType;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -79,12 +82,11 @@ public class AbstractDbProcessor implements DbProcessor
                     }
                     // 处理表结构, 列信息
                     List<DbColumn> dbColumns = this.processDbColumnsMetaData(conn, dbTable);
-                    if (null != dbColumns)
+                    if (!CollectionUtils.isEmpty(dbColumns))
                     {
                         dbTable.setColumns(dbColumns);
-                        
-                        // 获取表主键
-                        
+                        // 处理表主键
+                        this.processDbPrimaryKeys(conn, dbTable);
                     }
                 }
             }
@@ -148,7 +150,8 @@ public class AbstractDbProcessor implements DbProcessor
                                 }
                                 fieldName += subColumnName.substring(0, 1).toUpperCase() + subColumnName.substring(1);
                             }
-                            if(!StringUtils.isEmpty(fieldName)){
+                            if (!StringUtils.isEmpty(fieldName))
+                            {
                                 fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
                                 dbColumn.setFieldName(fieldName);
                             }
@@ -168,6 +171,53 @@ public class AbstractDbProcessor implements DbProcessor
         }
         
         return dbColumns;
+    }
+    
+    /**
+     * 处理表主键结构
+     * 
+     * @param conn
+     * @param dbTable
+     * @return List<DbPrimaryKey>
+     * @throws DbException
+     */
+    private void processDbPrimaryKeys(Connection conn, DbTable dbTable)
+        throws DbException
+    {
+        if (null != conn && null != dbTable && !CollectionUtils.isEmpty(dbTable.getColumns()))
+        {
+            try
+            {
+                List<DbColumn> dbColumns = dbTable.getColumns();
+                Map<String, DbColumn> dbColumnsMap = new HashMap<String, DbColumn>();
+                for (DbColumn dbColumn : dbColumns)
+                {
+                    dbColumnsMap.put(dbColumn.getColumnName(), dbColumn);
+                }
+                
+                // 数据库主键数据
+                List<DbColumn> dbPrimaryKeys = new ArrayList<DbColumn>();
+                DatabaseMetaData dbmd = conn.getMetaData();
+                ResultSet primaryKeys =
+                    dbmd.getPrimaryKeys(dbTable.getCatalog(), dbTable.getSchema(), dbTable.getTableName());
+                while (primaryKeys.next())
+                {
+                    String columnName = primaryKeys.getString("COLUMN_NAME");
+                    DbColumn dbColumn = dbColumnsMap.get(columnName);
+                    if (!StringUtils.isEmpty(columnName) && null != dbColumn)
+                    {
+                        dbColumn.setPrimaryKey(Boolean.TRUE);
+                        dbPrimaryKeys.add(dbColumn);
+                    }
+                }
+                dbTable.setPrimaryKeys(dbPrimaryKeys);
+            }
+            catch (SQLException e)
+            {
+                logger.error("Processing database data get error, cause: {}", e);
+                throw new DbException(e);
+            }
+        }
     }
     
     /**

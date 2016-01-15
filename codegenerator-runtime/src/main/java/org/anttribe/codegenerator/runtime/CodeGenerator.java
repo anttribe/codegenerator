@@ -248,6 +248,7 @@ public class CodeGenerator implements Generator
             PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
             template.process(templateDatas, writer);
             writer.close();
+            
             logger.debug("Generating code successful, output file {}", outputFile.getPath());
         }
     }

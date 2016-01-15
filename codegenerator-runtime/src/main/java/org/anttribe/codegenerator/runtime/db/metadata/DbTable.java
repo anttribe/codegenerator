@@ -1,6 +1,6 @@
 /*
  * 文  件   名: DbTable.java
- * 版         本 : (Anttribe)codegenerator-core. All rights reserved.
+ * 版         本 : (Anttribe)codegenerator-runtime. All rights reserved.
  * 描         述 : <描述>
  * 修   改  人: zhaoyong
  * 修改时间: 2015年12月21日
