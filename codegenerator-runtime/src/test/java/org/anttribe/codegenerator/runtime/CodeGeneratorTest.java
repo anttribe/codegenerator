@@ -34,6 +34,15 @@ public class CodeGeneratorTest
     @Test
     public void testGenerateString()
     {
+        try
+        {
+            Generator generator = new CodeGenerator();
+            generator.generate("openeshop");
+        }
+        catch (CodeGeneratorException e)
+        {
+            e.printStackTrace();
+        }
     }
     
 }

@@ -57,4 +57,5 @@
 			<mapping table="cas_t_core_content_attr_value" module="base"></mapping>
 		</table-mappings>
 	</project>
+
 </projects>
