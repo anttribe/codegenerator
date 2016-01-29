@@ -30,6 +30,7 @@ import org.anttribe.codegenerator.runtime.builder.xml.XmlProjectConfigBuilder;
 import org.anttribe.codegenerator.runtime.db.DbDialect;
 import org.anttribe.codegenerator.runtime.db.DbProcessor;
 import org.anttribe.codegenerator.runtime.db.metadata.DbTable;
+import org.anttribe.codegenerator.runtime.entity.GeneratorOutput;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -216,10 +217,24 @@ public class CodeGenerator implements Generator
         }
     }
     
-    private void generate(Map<String, Object> templateDatas, ProjectConfig projectConfig, TableMapping tableMapping,
-        TemplateMapping templateMapping)
+    /**
+     * 根据模板数据生成对应文件
+     * 
+     * @param templateDatas 模板数据
+     * @param projectConfig 项目配置
+     * @param tableMapping 表映射
+     * @param templateMapping 模板映射
+     * @return GeneratorOutput
+     * @throws IOException
+     * @throws TemplateException
+     * @throws CodeGeneratorException
+     */
+    private GeneratorOutput generate(Map<String, Object> templateDatas, ProjectConfig projectConfig,
+        TableMapping tableMapping, TemplateMapping templateMapping)
             throws IOException, TemplateException, CodeGeneratorException
     {
+        GeneratorOutput generatorOutput = null;
+        
         templateDatas.putAll(templateMapping.toTemplateDatas());
         // 模板路径
         File templateFile = new File(templateMapping.getTemplate());
@@ -250,7 +265,16 @@ public class CodeGenerator implements Generator
             writer.close();
             
             logger.debug("Generating code successful, output file {}", outputFile.getPath());
+            
+            // 代码生成器输出
+            generatorOutput = new GeneratorOutput();
+            generatorOutput.setProject(projectConfig.getName());
+            generatorOutput.setTable(tableMapping.getTable());
+            generatorOutput.setTemplate(templateMapping.getTemplate());
+            generatorOutput.setModel(tableMapping.getModel());
+            generatorOutput.setOutputFilename(outputFilename);
         }
+        return generatorOutput;
     }
     
     /**
