@@ -37,7 +37,7 @@ public class CodeGeneratorTest
         try
         {
             Generator generator = new CodeGenerator();
-            generator.generate("openeshop");
+            generator.generate("zhsq");
         }
         catch (CodeGeneratorException e)
         {

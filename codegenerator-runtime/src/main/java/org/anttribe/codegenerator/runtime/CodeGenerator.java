@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -66,21 +67,30 @@ public class CodeGenerator implements Generator
     private Configuration templateConfig = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
     
     @Override
-    public void generate()
+    public List<Map<String, List<GeneratorOutput>>> generate()
         throws CodeGeneratorException
     {
         List<ProjectConfig> projectConfigs = projectConfigBuilder.loopup();
         if (!CollectionUtils.isEmpty(projectConfigs))
         {
+            List<Map<String, List<GeneratorOutput>>> projectsOutputs =
+                new ArrayList<Map<String, List<GeneratorOutput>>>();
             for (ProjectConfig projectConfig : projectConfigs)
             {
-                this.generate(projectConfig);
+                Map<String, List<GeneratorOutput>> projectOutputs = this.generate(projectConfig);
+                if (null != projectOutputs)
+                {
+                    projectsOutputs.add(projectOutputs);
+                }
             }
+            
+            return projectsOutputs;
         }
+        return null;
     }
     
     @Override
-    public void generate(String projectName)
+    public Map<String, List<GeneratorOutput>> generate(String projectName)
         throws CodeGeneratorException
     {
         if (!StringUtils.isEmpty(projectName))
@@ -89,23 +99,27 @@ public class CodeGenerator implements Generator
             if (null == projectConfig)
             {
                 logger.warn("Can not find projectConfig for project {}", projectName);
-                return;
+                return null;
             }
-            this.generate(projectConfig);
+            Map<String, List<GeneratorOutput>> projectOutputs = this.generate(projectConfig);
+            
+            return projectOutputs;
         }
+        return null;
     }
     
     @Override
-    public void generate(String projectName, String tableName)
+    public List<GeneratorOutput> generate(String projectName, String tableName)
         throws CodeGeneratorException
     {
+        List<GeneratorOutput> tableOutputs = null;
         if (!StringUtils.isEmpty(projectName) && !StringUtils.isEmpty(tableName))
         {
             ProjectConfig projectConfig = projectConfigBuilder.loopup(projectName);
             if (null == projectConfig)
             {
                 logger.warn("Can not find projectConfig for project {}", projectName);
-                return;
+                return null;
             }
             
             Map<String, TableMapping> tableMappings = projectConfig.getTableMappings();
@@ -123,11 +137,13 @@ public class CodeGenerator implements Generator
                     "there is no tableMapping in this projectConfig with table " + tableName);
             }
             
-            this.generate(projectConfig, tableMapping);
+            tableOutputs = this.generate(projectConfig, tableMapping);
         }
+        
+        return tableOutputs;
     }
     
-    private void generate(ProjectConfig projectConfig)
+    private Map<String, List<GeneratorOutput>> generate(ProjectConfig projectConfig)
         throws CodeGeneratorException
     {
         if (null != projectConfig)
@@ -141,15 +157,20 @@ public class CodeGenerator implements Generator
                 throw new CodeGeneratorException("there is no tableMappings in this projectConfig.");
             }
             
+            Map<String, List<GeneratorOutput>> projectOutputs = new HashMap<String, List<GeneratorOutput>>();
             // 遍历每张表，生成代码
             for (TableMapping tableMapping : tableMappings.values())
             {
-                this.generate(projectConfig, tableMapping);
+                List<GeneratorOutput> tableOutputs = this.generate(projectConfig, tableMapping);
+                projectOutputs.put(tableMapping.getTable(), tableOutputs);
             }
+            
+            return projectOutputs;
         }
+        return null;
     }
     
-    private void generate(ProjectConfig projectConfig, TableMapping tableMapping)
+    private List<GeneratorOutput> generate(ProjectConfig projectConfig, TableMapping tableMapping)
         throws CodeGeneratorException
     {
         logger.debug("Start generating code for project [{}], table [{}]",
@@ -197,12 +218,17 @@ public class CodeGenerator implements Generator
             }
             templateDatas.put(Keys.DBTABLE, dbTable);
             
+            List<GeneratorOutput> tableOutputs = new ArrayList<GeneratorOutput>();
             // 遍历模板，生成对应每一个模板的代码
             for (TemplateMapping templateMapping : templateMappings)
             {
                 try
                 {
-                    this.generate(templateDatas, projectConfig, tableMapping, templateMapping);
+                    GeneratorOutput output = this.generate(templateDatas, projectConfig, tableMapping, templateMapping);
+                    if (null != output)
+                    {
+                        tableOutputs.add(output);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -210,6 +236,7 @@ public class CodeGenerator implements Generator
                     throw new CodeGeneratorException("Generating code get error", e);
                 }
             }
+            return tableOutputs;
         }
         catch (DbException e)
         {

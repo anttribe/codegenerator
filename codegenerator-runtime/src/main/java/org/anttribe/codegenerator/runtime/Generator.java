@@ -7,7 +7,11 @@
  */
 package org.anttribe.codegenerator.runtime;
 
+import java.util.List;
+import java.util.Map;
+
 import org.anttribe.codegenerator.core.exception.CodeGeneratorException;
+import org.anttribe.codegenerator.runtime.entity.GeneratorOutput;
 
 /**
  * @author zhaoyong
@@ -15,12 +19,33 @@ import org.anttribe.codegenerator.core.exception.CodeGeneratorException;
  */
 public interface Generator
 {
-    public void generate()
+    /**
+     * 生成配置文件中所有项目代码
+     * 
+     * @return List<Map<String, List<GeneratorOutput>>>
+     * @throws CodeGeneratorException
+     */
+    public List<Map<String, List<GeneratorOutput>>> generate()
         throws CodeGeneratorException;
         
-    public void generate(String projectName)
+    /**
+     * 生成指定项目代码
+     * 
+     * @param projectName 项目名
+     * @return Map<String, List<GeneratorOutput>>
+     * @throws CodeGeneratorException
+     */
+    public Map<String, List<GeneratorOutput>> generate(String projectName)
         throws CodeGeneratorException;
         
-    public void generate(String projectName, String tableName)
+    /**
+     * 生成指定项目中指定表的代码
+     * 
+     * @param projectName
+     * @param tableName
+     * @return List<GeneratorOutput>
+     * @throws CodeGeneratorException
+     */
+    public List<GeneratorOutput> generate(String projectName, String tableName)
         throws CodeGeneratorException;
 }
