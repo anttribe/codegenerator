@@ -62,4 +62,50 @@
 		</table-mappings>
 	</project>
 
+	<!-- 项目: cas -->
+	<project name="cas" description="内容聚合系统" basePackage="org.anttribe.cas"
+		encoding="UTF-8" templateDirectory="templates/cas" outputDirectory="D:\Downloads\codegenerator\output"
+		tablePrefix="cas_t_core_" tableSuffix="">
+
+		<copyright>
+			<author>zhaoyong</author>
+			<author-email>anshenglimin@163.com</author-email>
+			<description>
+			    <![CDATA[Copyright (c) (Anttribe)cas v1.0. All rights reserved.]]>
+			</description>
+			<version>1.0</version>
+		</copyright>
+
+		<dbConfig>
+			<dialect>MYSQL</dialect>
+			<driverClass>com.mysql.jdbc.Driver</driverClass>
+			<url>jdbc:mysql://localhost:3306/cas?useUnicode=true&amp;characterEncoding=UTF-8
+			</url>
+			<username>root</username>
+			<password>123456</password>
+		</dbConfig>
+
+		<template-mappings>
+			<mapping template="Model.ftl" output="${MODELNAME}.java"
+				package="core.entity"></mapping>
+			<mapping template="mapper.ftl" output="${MODELNAME}-mapper.xml"
+				package="core.entity"></mapping>
+			<mapping template="Application.ftl" output="${MODELNAME}Application.java"
+				package="application"></mapping>
+			<mapping template="ApplicationImpl.ftl" output="${MODELNAME}ApplicationImpl.java"
+				package="application.impl"></mapping>
+		</template-mappings>
+
+		<table-mappings>
+			<mapping table="cas_t_core_category" module="base"></mapping>
+			<mapping table="cas_t_core_content" module="base"></mapping>
+			<mapping table="cas_t_core_content_attr" module="base"></mapping>
+			<mapping table="cas_t_core_content_attr_value" module="base"></mapping>
+			<mapping table="cas_t_core_content_type" module="base"></mapping>
+			<mapping table="cas_t_core_crawler" module="base"></mapping>
+			<mapping table="cas_t_core_crawler_regular" module="base"></mapping>
+			<mapping table="cas_t_core_website" module="base"></mapping>
+		</table-mappings>
+	</project>
+
 </projects>

@@ -37,7 +37,7 @@ public class CodeGeneratorTest
         try
         {
             Generator generator = new CodeGenerator();
-            generator.generate("test");
+            generator.generate("cas");
         }
         catch (CodeGeneratorException e)
         {
