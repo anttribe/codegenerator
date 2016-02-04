@@ -9,6 +9,7 @@ package org.anttribe.codegenerator.core.config;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,8 @@ import java.util.Map;
 import org.anttribe.codegenerator.core.constants.Constants;
 import org.anttribe.codegenerator.core.constants.Keys;
 import org.anttribe.codegenerator.core.exception.ConfigException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +75,19 @@ public class ProjectConfig
     private String tablePrefix;
     
     /**
+     * 标前缀
+     */
+    private List<String> tablePrefixs;
+    
+    /**
      * 表后缀
      */
     private String tableSuffix;
+    
+    /**
+     * 表后缀
+     */
+    private List<String> tableSuffixs;
     
     /**
      * 项目版权信息
@@ -160,7 +173,7 @@ public class ProjectConfig
     {
         if (StringUtils.isEmpty(name))
         {
-            throw new ConfigException("configing project config, project name is not set.");
+            throw new ConfigException("Configing project config, project name is not set.");
         }
         this.name = name;
     }
@@ -225,7 +238,7 @@ public class ProjectConfig
         if (StringUtils.isEmpty(templateDirectory))
         {
             templateDirectory = Constants.DEFAULT_TEMPLATE_DIRECTORY + this.getName();
-            logger.debug("configing project config, templateDirectory is not set, then use the default {}",
+            logger.debug("Configing project config, templateDirectory is not set, then use the default {}",
                 templateDirectory);
         }
         this.templateDirectory = templateDirectory;
@@ -241,7 +254,7 @@ public class ProjectConfig
         if (StringUtils.isEmpty(outputDirectory))
         {
             outputDirectory = this.getClass().getClassLoader().getResource("").getFile() + "/" + this.getName();
-            logger.debug("configing project config, outputDirectory is not set, then set to the default {}",
+            logger.debug("Configing project config, outputDirectory is not set, then set to the default {}",
                 outputDirectory);
         }
         this.outputDirectory = outputDirectory + "/" + this.getName();
@@ -255,6 +268,15 @@ public class ProjectConfig
     public void setTablePrefix(String tablePrefix)
     {
         this.tablePrefix = tablePrefix;
+        if (!StringUtils.isEmpty(tablePrefix))
+        {
+            tablePrefixs = new ArrayList<String>();
+            String[] tablePrefixArray = StringUtils.split(tablePrefix, ",");
+            if (!ArrayUtils.isEmpty(tablePrefixArray))
+            {
+                tablePrefixs = Arrays.asList(tablePrefixArray);
+            }
+        }
     }
     
     public String getTableSuffix()
@@ -265,6 +287,15 @@ public class ProjectConfig
     public void setTableSuffix(String tableSuffix)
     {
         this.tableSuffix = tableSuffix;
+        if (!StringUtils.isEmpty(tableSuffix))
+        {
+            tableSuffixs = new ArrayList<String>();
+            String[] tableSuffixArray = StringUtils.split(tableSuffix, ",");
+            if (!ArrayUtils.isEmpty(tableSuffixArray))
+            {
+                tableSuffixs = Arrays.asList(tableSuffixArray);
+            }
+        }
     }
     
     public Copyright getCopyright()
@@ -283,7 +314,20 @@ public class ProjectConfig
     }
     
     public void setDbConfig(DbConfig dbConfig)
+        throws ConfigException
     {
+        if (null == dbConfig)
+        {
+            logger.error("Configing dbConfig, dbConfig is not configed");
+            throw new ConfigException("Configing dbConfig, dbConfig is not configed.");
+        }
+        if (StringUtils.isEmpty(dbConfig.getDialect()) || StringUtils.isEmpty(dbConfig.getDriverClass())
+            || StringUtils.isEmpty(dbConfig.getUrl()) || StringUtils.isEmpty(dbConfig.getUsername()))
+        {
+            logger.error("Configing dbConfig, dbConfig dialect, driverClass, url, username is not configed complete.");
+            throw new ConfigException(
+                "Configing dbConfig, dbConfig dialect, driverClass, url, username is not configed complete.");
+        }
         this.dbConfig = dbConfig;
     }
     
@@ -302,8 +346,8 @@ public class ProjectConfig
                 String template = templateMapping.getTemplate();
                 if (StringUtils.isEmpty(template))
                 {
-                    logger.error("configing TemplateMapping, attribute template is not set");
-                    throw new ConfigException("configing TemplateMapping, attribute template is not set.");
+                    logger.error("Configing TemplateMapping, attribute template is not set");
+                    throw new ConfigException("Configing TemplateMapping, attribute template is not set.");
                 }
                 
                 // 模板路径
@@ -316,8 +360,8 @@ public class ProjectConfig
                 URL templateURL = this.getClass().getClassLoader().getResource(template);
                 if (null == templateURL)
                 {
-                    logger.error("configing TemplateMapping, template file [{}] not exist.", template);
-                    throw new ConfigException("configing TemplateMapping, template file [" + template + "] not exist.");
+                    logger.error("Configing TemplateMapping, template file [{}] not exist.", template);
+                    throw new ConfigException("Configing TemplateMapping, template file [" + template + "] not exist.");
                 }
                 templateMapping.setTemplate(templateURL.getFile());
                 
@@ -325,8 +369,11 @@ public class ProjectConfig
                 String output = templateMapping.getOutput();
                 if (StringUtils.isEmpty(output))
                 {
-                    output = "${" + Keys.MODELNAME + "}" + template.substring(0, template.indexOf("."))
-                        + Constants.DEFAULT_OUTPUT_FILE_SUBFIX;
+                    output = "${" + Keys.MODELNAME + "}" + Constants.DEFAULT_OUTPUT_FILE_SUBFIX;
+                    
+                    logger.debug(
+                        "Configing TemplateMapping, attribute output is not set, then use ${MODELNAME} as output[{}].",
+                        output);
                 }
                 output = output.replace("\\", "/");
                 templateMapping.setOutput(output);
@@ -350,8 +397,8 @@ public class ProjectConfig
             {
                 if (null == tableMapping || StringUtils.isEmpty(tableMapping.getTable()))
                 {
-                    logger.error("configing TableMapping, attribute table is not set");
-                    throw new ConfigException("configing TableMapping, attribute table is not set.");
+                    logger.error("Configing TableMapping, attribute table is not set");
+                    throw new ConfigException("Configing TableMapping, attribute table is not set.");
                 }
                 
                 String tableName = tableMapping.getTable();
@@ -359,18 +406,30 @@ public class ProjectConfig
                 String modelName = tableMapping.getModel();
                 if (StringUtils.isEmpty(modelName))
                 {
-                    logger.debug(
-                        "configing TableMapping, attribute model is not set, then use tableName[{}] to populate modelName.",
-                        tableName);
+                    String oriTableName = tableName;
                     // 去除表前缀
-                    if (!StringUtils.isEmpty(this.getTablePrefix()))
+                    if (!CollectionUtils.isEmpty(this.tablePrefixs))
                     {
-                        tableName = tableName.replaceFirst(this.getTablePrefix(), "");
+                        for (String prefix : tablePrefixs)
+                        {
+                            if (tableName.startsWith(prefix))
+                            {
+                                tableName = tableName.replaceFirst(prefix, "");
+                                break;
+                            }
+                        }
                     }
                     // 去除表后缀
-                    if (!StringUtils.isEmpty(this.getTableSuffix()) && tableName.endsWith(this.getTableSuffix()))
+                    if (!CollectionUtils.isEmpty(this.tableSuffixs))
                     {
-                        tableName = tableName.substring(0, tableName.lastIndexOf(this.getTableSuffix()));
+                        for (String suffix : tableSuffixs)
+                        {
+                            if (tableName.endsWith(suffix))
+                            {
+                                tableName = tableName.substring(0, tableName.lastIndexOf(suffix));
+                                break;
+                            }
+                        }
                     }
                     if (StringUtils.isEmpty(tableName))
                     {
@@ -394,8 +453,8 @@ public class ProjectConfig
                     }
                     
                     logger.debug(
-                        "configing TableMapping, attribute model is not set, then use tableName[{}] to populate modelName[{}].",
-                        tableName,
+                        "Configing TableMapping, attribute model is not set, then use tableName[{}] to populate modelName[{}].",
+                        oriTableName,
                         modelName);
                 }
                 tableMapping.setModel(modelName);

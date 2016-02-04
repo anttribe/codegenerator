@@ -143,6 +143,13 @@ public class CodeGenerator implements Generator
         return tableOutputs;
     }
     
+    /**
+     * 根据项目配置生成对应项目的代码
+     * 
+     * @param projectConfig
+     * @return
+     * @throws CodeGeneratorException
+     */
     private Map<String, List<GeneratorOutput>> generate(ProjectConfig projectConfig)
         throws CodeGeneratorException
     {
@@ -153,8 +160,8 @@ public class CodeGenerator implements Generator
             Map<String, TableMapping> tableMappings = projectConfig.getTableMappings();
             if (MapUtils.isEmpty(tableMappings))
             {
-                logger.warn("there is no tableMappings in this projectConfig.");
-                throw new CodeGeneratorException("there is no tableMappings in this projectConfig.");
+                logger.warn("There is no tableMappings in this projectConfig.");
+                throw new CodeGeneratorException("There is no tableMappings in this projectConfig.");
             }
             
             Map<String, List<GeneratorOutput>> projectOutputs = new HashMap<String, List<GeneratorOutput>>();
@@ -170,17 +177,25 @@ public class CodeGenerator implements Generator
         return null;
     }
     
+    /**
+     * 根据项目配置和表映射生成对应表的代码
+     * 
+     * @param projectConfig
+     * @param tableMapping
+     * @return List<GeneratorOutput>
+     * @throws CodeGeneratorException
+     */
     private List<GeneratorOutput> generate(ProjectConfig projectConfig, TableMapping tableMapping)
         throws CodeGeneratorException
     {
-        logger.debug("Start generating code for project [{}], table [{}]",
+        logger.debug("Starting generating code for project [{}], table [{}]",
             projectConfig.getName(),
             tableMapping.getTable());
         List<TemplateMapping> templateMappings = projectConfig.getTemplateMappings();
         if (CollectionUtils.isEmpty(templateMappings))
         {
             logger.warn("There is no templateMappings in this projectConfig.");
-            throw new CodeGeneratorException("there is no templateMappings in this projectConfig.");
+            throw new CodeGeneratorException("There is no templateMappings in this projectConfig.");
         }
         
         // 设置参数
@@ -319,21 +334,33 @@ public class CodeGenerator implements Generator
         outputFilename.append(projectConfig.getOutputDirectory());
         
         // 构造包名
-        StringBuffer packageName = new StringBuffer();
+        StringBuffer packageNameStrB = new StringBuffer();
         if (!StringUtils.isEmpty(projectConfig.getBasePackage()))
         {
-            packageName.append(projectConfig.getBasePackage());
+            packageNameStrB.append(projectConfig.getBasePackage());
         }
         if (!StringUtils.isEmpty(tableMapping.getModule()))
         {
-            packageName.append(".").append(tableMapping.getModule());
+            packageNameStrB.append(".").append(tableMapping.getModule());
         }
         if (!StringUtils.isEmpty(templateMapping.getPackageName()))
         {
-            packageName.append(".").append(templateMapping.getPackageName());
+            packageNameStrB.append(".").append(templateMapping.getPackageName());
         }
-        templateDatas.put(Keys.PACKAGENAME, packageName.toString());
-        outputFilename.append("/").append(packageName.toString().replaceAll("\\.", "/"));
+        // 去除包名可能多余的"."
+        String packageName = packageNameStrB.toString();
+        if (!StringUtils.isEmpty(packageName))
+        {
+            if (packageName.startsWith("."))
+            {
+                packageName = packageName.substring(packageName.indexOf(".") + 1);
+            }
+            if (!StringUtils.isEmpty(packageName))
+            {
+                outputFilename.append("/").append(packageName.replaceAll("\\.", "/"));
+            }
+        }
+        templateDatas.put(Keys.PACKAGENAME, packageName);
         
         String output = templateMapping.getOutput();
         if (!StringUtils.isEmpty(output))

@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projects>
-	<project name="cas" description="内容聚合系统" basePackage="org.anttribe.cas"
-		encoding="UTF-8" templateDirectory="templates/cas" outputDirectory="D:\Downloads\codegenerator\output"
-		tablePrefix="cas_t_core" tableSuffix="">
+	<!-- 项目属性配置: -->
+	<!-- name: 项目名称, 必需 -->
+	<!-- description: 项目描述 -->
+	<!-- basePackage:基础包名 -->
+	<!-- encoding: 项目编码, 默认：UTF-8 -->
+	<!-- templateDirectory: 模板文件路径, 默认指向：templates/项目名 -->
+	<!-- outputDirectory: 输出文件路径 -->
+	<!-- tablePrefix: 标前缀, 在生成代码过程中, 会忽略表前缀生成模型名, 多个以“,”分隔 -->
+	<!-- tableSuffix: 标后缀, 在生成代码过程中, 会忽略表后缀生成模型名, 多个以“,”分隔 -->
+	<project name="test" description="测试" basePackage="org.anttribe.test"
+		encoding="UTF-8" templateDirectory="" outputDirectory="D:\Downloads\codegenerator\output"
+		tablePrefix="t_" tableSuffix="">
 
 		<!-- 版权信息 -->
 		<copyright>
+			<!-- author: 作者 -->
 			<author>zhaoyong</author>
+			<!-- author-email: 作者联系email -->
 			<author-email>anshenglimin@163.com</author-email>
+			<!-- description: 版权描述 -->
 			<description>
-			    <![CDATA[Copyright (c) (Anttribe)cas v1.0. All rights reserved.]]>
+			    <![CDATA[Copyright (c) (Anttribe)test v1.0. All rights reserved.]]>
 			</description>
+			<!-- version: 项目版本号 -->
 			<version>1.0</version>
 		</copyright>
 
@@ -18,15 +31,15 @@
 		<dbConfig>
 			<!-- dialect: 数据库方言, MYSQL -->
 			<dialect>MYSQL</dialect>
-			<!-- 数据库驱动driver -->
+			<!-- driverClass: 数据库驱动driver -->
 			<driverClass>com.mysql.jdbc.Driver</driverClass>
-			<!-- 数据库连接url -->
-			<url>jdbc:mysql://localhost:3306/cas?useUnicode=true&amp;characterEncoding=UTF-8
+			<!-- url: 数据库连接url -->
+			<url>jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8
 			</url>
-			<!-- 数据库连接用户 -->
+			<!-- username: 数据库连接用户 -->
 			<username>root</username>
-			<!-- 数据库用户密码 -->
-			<password>123456</password>
+			<!-- password: 数据库用户密码 -->
+			<password></password>
 		</dbConfig>
 
 		<!-- 模板映射 -->
@@ -45,16 +58,7 @@
 		<!-- 表映射 -->
 		<table-mappings>
 			<!-- table: 数据库表名, model: 模型类名, moudle: 子模块名 -->
-			<mapping table="cas_t_core_category" module="base"></mapping>
-			<mapping table="cas_t_core_website" module="base"></mapping>
-			<mapping table="cas_t_core_content_type" module="base"></mapping>
-
-			<mapping table="cas_t_core_crawler" module="base"></mapping>
-			<mapping table="cas_t_core_crawler_regular" module="base"></mapping>
-
-			<mapping table="cas_t_core_content" module="base"></mapping>
-			<mapping table="cas_t_core_content_attr" module="base"></mapping>
-			<mapping table="cas_t_core_content_attr_value" module="base"></mapping>
+			<mapping table="t_core_category" model="Category" module="base"></mapping>
 		</table-mappings>
 	</project>
 

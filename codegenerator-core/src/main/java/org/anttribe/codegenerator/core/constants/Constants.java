@@ -23,7 +23,7 @@ public class Constants
     /**
      * 默认模板路径
      */
-    public static final String DEFAULT_TEMPLATE_DIRECTORY = "template/";
+    public static final String DEFAULT_TEMPLATE_DIRECTORY = "templates/";
     
     /**
      * 默认模板文件后缀
