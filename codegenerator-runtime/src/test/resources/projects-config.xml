@@ -39,7 +39,7 @@
 			<!-- username: 数据库连接用户 -->
 			<username>root</username>
 			<!-- password: 数据库用户密码 -->
-			<password></password>
+			<password>123456</password>
 		</dbConfig>
 
 		<!-- 模板映射 -->
